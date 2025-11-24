@@ -93,7 +93,7 @@ word_frequencies = {w: c for w, c in word_frequencies.items() if c > 1}
 # -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
     outp = [w.strip(".,!?;:").lower() for w in string.split() if w.strip(".,!?;:")]
-    return {w: outp.count(w) for w in set(outp) if outp.count(w) > k}
+    return {w: outp.count(w) for w in set(outp) if outp.count(w) >= k}
 
 
 # test:
