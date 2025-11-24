@@ -46,8 +46,8 @@ print(tokens)
 # Your code here:
 # -----------------------------------------------
 def tokenize(string: str) -> list:
-    tokens = [word.strip(".,!?;:").lower() for word in string.split()]
-    return (sorted(tokens))
+    tokens = [word.strip('.,!?;:"\'-') for word in string.split()]
+    return sorted(set(word.lower() for word in tokens))
 
 tokens = tokenize(text)
 print(tokens)
@@ -78,16 +78,16 @@ print(tokens)
 
 # Your code here:
 # -----------------------------------------------
-word_frequencies = {word: tokens.count(word) for word in set(tokens)}
+word_frequencies = {word.lower(): tokens.count(word.lower()) for word in tokens}
+
 
 # Expected output example: {'the': 2, 'quick': 1, ...}
 print(word_frequencies)
 
 # Modify the comprehension to include only words that appear more than once.
-word_frequencies_2 = {word: tokens.count(word) for word in set(tokens) if tokens.count(word)>1}
+word_frequencies_2 = {word.lower(): tokens.count(word.lower()) for word in tokens if tokens.count(word.lower()) > 1}
 print(word_frequencies_2)
 # -----------------------------------------------
-
 
 
 
@@ -99,8 +99,9 @@ print(word_frequencies_2)
 # Your code here:
 # -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
-    string_token = tokenize(string)
-    return {word: string_token.count(word) for word in set(string_token) if string_token.count(word) >= k}
+    tokens = [word.strip('.,!?;:"\'-').lower() for word in string.split() if word.strip('.,!?;:"\'-')]
+    token_freq = {word: tokens.count(word) for word in set(tokens)}
+    return {word: count for word, count in token_freq.items() if count >= k}
 
 # test:
 text_hist = {'the': 2, 'quick': 1, 'brown': 1, 'fox': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1}
@@ -131,12 +132,8 @@ all(text_hist[key] == value for key, value in token_counts(text).items())
 
 # Your code here:
 # -----------------------------------------------
-def tokenize(string: str) -> list:
-    tokens = [word.strip(".,!?;:").lower() for word in string.split()]
-    return (sorted(set(tokens)))
-tokens = tokenize(text)
+token_to_id = {token: idx for idx, token in enumerate(sorted(set(word.lower() for word in tokens)))}
 
-token_to_id = {word: i for i, word in enumerate(tokens)}
 
 # Expected output: {'dog': 0, 'quick': 1, 'fox': 2, 'the': 3, 'over': 4, 'lazy': 5, 'brown': 6, 'jumps': 7}
 print(token_to_id)
@@ -148,7 +145,7 @@ print(token_to_id)
 #
 # Your code here:
 # -----------------------------------------------
-id_to_token =  {i: word for word, i in token_to_id.items()}
+id_to_token = {idx: token for token, idx in token_to_id.items()}
 print(id_to_token)
 
 # tests: 
@@ -194,10 +191,11 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 
 # Your code here:
 # -----------------------------------------------
-def tokenize_and_encode(documents: list):
+def tokenize_and_encode(documents: list) -> list:
     token_to_id, id_to_token = make_vocabulary_map(documents)
-    encoded = [[token_to_id[word.strip(".,!?;:").lower()] for word in doc.split() if word.strip(".,!?;:")] for doc in documents]
+    encoded = [[token_to_id[token] for token in tokenize(doc)] for doc in documents]
     return encoded, token_to_id, id_to_token
+
 
 
 # Test:
